@@ -1,0 +1,17 @@
+<mat-card>
+  <mat-card-header>
+    <div mat-card-avatar class="example-header-image"></div>
+    <mat-card-title>Add New Post</mat-card-title>
+  </mat-card-header>
+  <form #postForm="ngForm" (submit)="onAddPost(postForm)">
+    <mat-form-field>
+      <input required matInput placeholder="Title" name="title" ngModel #title="ngModel">
+      <mat-error *ngIf="title.invalid">Title is required</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <textarea required matInput placeholder="Content" rows="6" name="content" ngModel #content="ngModel"></textarea>
+      <mat-error *ngIf="content.invalid">Content is required</mat-error>
+    </mat-form-field>
+    <button type="submit" mat-raised-button color="accent">ADD</button>
+  </form>
+</mat-card>
