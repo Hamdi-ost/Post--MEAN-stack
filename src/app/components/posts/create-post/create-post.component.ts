@@ -3,6 +3,7 @@ import { NgForm, FormGroup, FormControl, Validator, Validators } from '@angular/
 import { Post } from 'src/app/models/post';
 import { PostService } from 'src/app/services/post.service';
 import { Router } from '@angular/router';
+import { mimeType } from './mime-type.validator';
 
 @Component({
   selector: 'app-create-post',
@@ -20,7 +21,7 @@ export class CreatePostComponent implements OnInit {
     this.form = new FormGroup({
       title: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
       content: new FormControl(null, { validators: [Validators.required] }),
-      image: new FormControl(null, { validators: [Validators.required] })
+      image: new FormControl(null, { validators: [Validators.required], asyncValidators: [mimeType] })
     });
   }
 
