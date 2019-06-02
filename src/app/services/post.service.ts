@@ -27,7 +27,14 @@ export class PostService {
   }
 
   addPost(post: Post) {
-    return this.http.post<{ message: string }>(this.url, post);
+    return this.http
+      .post<{ message: string }>(this.url, post);
+  }
+
+  deletePost(id: string) {
+    console.log(id);
+
+    return this.http.delete(this.url + '/' + id);
   }
 
 }
