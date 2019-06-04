@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm, FormGroup, FormControl, Validator, Validators } from '@angular/forms';
 import { Post } from 'src/app/models/post';
 import { PostService } from 'src/app/services/post.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { mimeType } from './mime-type.validator';
 
 @Component({
@@ -14,10 +14,31 @@ export class CreatePostComponent implements OnInit {
 
   form: FormGroup;
   imagePreview;
+  private mode = 'create';
+  private postId: string;
+  post: Post;
 
-  constructor(private postService: PostService, private router: Router) { }
+  constructor(public route: ActivatedRoute, private postService: PostService, private router: Router) { }
 
   ngOnInit() {
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if (paramMap.has('postId')) {
+        this.mode = 'edit';
+        this.postId = paramMap.get('postId');
+        this.postService.getPost(this.postId).subscribe(data => {
+          this.post = { id: data._id, title: data.title, content: data.content, imagePath: data.imagePath };
+          this.form.setValue({
+            title: this.post.title,
+            content: this.post.content,
+            image: this.post.imagePath,
+          });
+        });
+      } else {
+        this.mode = 'create';
+        this.postId = null;
+      }
+    })
+
     this.form = new FormGroup({
       title: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
       content: new FormControl(null, { validators: [Validators.required] }),
@@ -25,19 +46,32 @@ export class CreatePostComponent implements OnInit {
     });
   }
 
-  onAddPost() {
+  onSavePost() {
     if (this.form.invalid) {
       return;
     }
-    const post: Post = {
-      id: null,
-      title: this.form.value.title,
-      content: this.form.value.content,
-    };
 
-    this.postService.addPost(post).subscribe(data => {
-      this.router.navigate(['/']);
-    });
+    if (this.mode === 'create') {
+      const post = {
+        id: null,
+        title: this.form.value.title,
+        content: this.form.value.content,
+        imagePath: this.form.value.image,
+      };
+
+      this.postService.addPost(post).subscribe(data => {
+        console.log(data);
+        this.router.navigate(['/']);
+      });
+    } else {
+      this.postService.updatePost(
+        this.postId,
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
+    }
+
     this.form.reset();
   }
 

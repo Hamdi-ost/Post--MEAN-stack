@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Post } from '../models/post';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { stringify } from 'querystring';
 @Injectable({
   providedIn: 'root'
 })
@@ -20,15 +21,38 @@ export class PostService {
           return {
             title: post.title,
             content: post.content,
-            id: post._id
+            id: post._id,
+            imagePath: post.imagePath
           };
         })
       }));
   }
 
+  getPost(id: string) {
+    return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>(this.url + '/' + id);
+  }
+
   addPost(post: Post) {
+    const postDate = new FormData(); // we add this cuz we can't upload an image to the backend with json format
+    postDate.append('title', post.title);
+    postDate.append('content', post.content);
+    postDate.append('image', post.imagePath, post.title /* file name */);
     return this.http
-      .post<{ message: string }>(this.url, post);
+      .post<{ message: string, post: Post }>(this.url, postDate);
+  }
+
+  updatePost(id: string, title: string, content: string, image: File | string) {
+    let postDate: FormData | Post;
+    if (typeof (image) === 'object') {
+      postDate = new FormData();
+      postDate.append('id', id);
+      postDate.append('title', title);
+      postDate.append('content', content);
+      postDate.append('image', image, title /* file name */);
+    } else {
+      postDate = { id: id, title: title, content: content, imagePath: null }
+    }
+    return this.http.put(this.url + '/' + id, postDate);
   }
 
   deletePost(id: string) {
