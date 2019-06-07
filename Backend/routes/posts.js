@@ -65,12 +65,26 @@ router.put('/:id', multer({ storage: storage }).single("image"), (req, res, next
 });
 
 router.get('', (req, res, next) => {
-    Post.find()
+    const pagesize = +req.query.pagesize; //pagination ('+' convert it to number)
+    const currentPage = +req.query.page; //pagination
+    const postQuery = Post.find();
+    let fetchedPosts;
+
+    if (pagesize && currentPage) {
+        postQuery
+            .skip(pagesize * (currentPage - 1))
+            .limit(pagesize); // return only pagesize document
+    }
+    postQuery
         .then(documents => {
-            console.log(documents);
+            fetchedPosts = documents; // So I can use it in the second .then
+            return Post.countDocuments();
+        })
+        .then(count => {
             res.status(200).json({
                 message: 'Post fetched succesfully!',
-                posts: documents
+                posts: fetchedPosts,
+                maxPosts: count
             })
         });
 });

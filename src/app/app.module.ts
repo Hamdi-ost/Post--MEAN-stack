@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
     MatExpansionModule,
     MatButtonModule,

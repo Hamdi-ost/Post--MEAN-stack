@@ -13,18 +13,22 @@ export class PostService {
 
   constructor(private http: HttpClient) { }
 
-  getAllPost() {
+  getAllPost(postsPerPage: number, currentPage: number) {
+    const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`; // for pagination
     return this.http
-      .get<{ message: string, posts: any }>(this.url)
+      .get<{ message: string, posts: any, maxPosts: number }>(this.url + queryParams)
       .pipe(map((postData) => {
-        return postData.posts.map(post => {
-          return {
-            title: post.title,
-            content: post.content,
-            id: post._id,
-            imagePath: post.imagePath
-          };
-        })
+        return {
+          posts: postData.posts.map(post => {
+            return {
+              title: post.title,
+              content: post.content,
+              id: post._id,
+              imagePath: post.imagePath
+            };
+          }),
+          maxPosts: postData.maxPosts
+        };
       }));
   }
 

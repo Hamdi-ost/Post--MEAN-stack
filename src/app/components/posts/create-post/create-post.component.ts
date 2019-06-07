@@ -60,7 +60,6 @@ export class CreatePostComponent implements OnInit {
       };
 
       this.postService.addPost(post).subscribe(data => {
-        console.log(data);
         this.router.navigate(['/']);
       });
     } else {

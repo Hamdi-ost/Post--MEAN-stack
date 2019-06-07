@@ -16,3 +16,7 @@ p {
     width: 100%;
     box-shadow:  1px 1px 5 px rgba(0, 0, 0, alpha)
 }
+
+mat-paginator {
+    margin-top: 1rem;
+}

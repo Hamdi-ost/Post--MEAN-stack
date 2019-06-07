@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import { PostService } from 'src/app/services/post.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-list-post',
@@ -13,6 +14,11 @@ import { takeUntil } from 'rxjs/operators';
 export class ListPostComponent implements OnInit {
 
   posts: Post[] = [];
+  totalPosts = 0; // for pagination
+  postsPerPage = 2;
+  pageSizeOptions = [1, 2, 5, 10];
+  currentPage = 1;
+
   private readonly onDestroy = new Subject<void>();
 
   constructor(private postService: PostService) { }
@@ -25,11 +31,12 @@ export class ListPostComponent implements OnInit {
 
   fetchData() {
     this.isLoading = true;
-    this.postService.getAllPost()
+    this.postService.getAllPost(this.postsPerPage, this.currentPage)
       .pipe(takeUntil(this.onDestroy))
       .subscribe(data => {
         this.isLoading = false;
-        this.posts = data;
+        this.posts = data.posts;
+        this.totalPosts = data.maxPosts;
       });
   }
 
@@ -40,6 +47,14 @@ export class ListPostComponent implements OnInit {
         this.fetchData();
       });
   }
+
+  onChangePage(pageDate: PageEvent) {
+    this.postsPerPage = pageDate.pageIndex + 1;
+    this.currentPage = pageDate.pageSize;
+    console.log(pageDate);
+    this.fetchData();
+  }
+
 
   ngOnDestroy(): void {
     this.onDestroy.next();
