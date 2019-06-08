@@ -3,6 +3,7 @@ import { Post } from '../models/post';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { stringify } from 'querystring';
+import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root'
 })
