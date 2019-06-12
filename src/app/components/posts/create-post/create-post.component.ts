@@ -65,7 +65,10 @@ export class CreatePostComponent implements OnInit {
         this.form.value.title,
         this.form.value.content,
         this.form.value.image
-      );
+      )
+        .subscribe(response => {
+          this.router.navigate(['/']);
+        });
     }
 
     this.form.reset();

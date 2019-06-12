@@ -63,7 +63,6 @@ export class ListPostComponent implements OnInit {
   onChangePage(pageDate: PageEvent) {
     this.postsPerPage = pageDate.pageIndex + 1;
     this.currentPage = pageDate.pageSize;
-    console.log(pageDate);
     this.fetchData();
   }
 
