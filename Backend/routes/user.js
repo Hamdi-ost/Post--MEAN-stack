@@ -53,7 +53,8 @@ router.post('/login', (req, res, next) => {
             );
             res.status(200).json({
                 token: token,
-                expiresIn: "3600" // in second
+                expiresIn: "3600", // in second
+                userId: fetchedUser._id // we can don't pass this field cuz we already have the userid in the token but it will be heavy to decode the token in the front
             });
         })
         .catch(error => {

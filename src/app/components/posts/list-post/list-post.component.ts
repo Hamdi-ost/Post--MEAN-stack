@@ -22,6 +22,7 @@ export class ListPostComponent implements OnInit {
 
   authStatusSub: Subscription;
   userIsAuthenticated;
+  userId: string;
 
   private readonly onDestroy = new Subject<void>();
 
@@ -42,10 +43,12 @@ export class ListPostComponent implements OnInit {
         this.posts = data.posts;
         this.totalPosts = data.maxPosts;
       });
+    this.userId = this.authService.getUserId();
     this.userIsAuthenticated = this.authService.getIsAuth();
     this.authStatusSub = this.authService.getAuthStatusListener()
       .subscribe(isAuthenticated => {
         this.userIsAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
       });
   }
 

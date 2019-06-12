@@ -26,7 +26,7 @@ export class CreatePostComponent implements OnInit {
         this.mode = 'edit';
         this.postId = paramMap.get('postId');
         this.postService.getPost(this.postId).subscribe(data => {
-          this.post = { id: data._id, title: data.title, content: data.content, imagePath: data.imagePath };
+          this.post = { id: data._id, title: data.title, content: data.content, imagePath: data.imagePath, creator: data.creator };
           this.form.setValue({
             title: this.post.title,
             content: this.post.content,
@@ -52,14 +52,11 @@ export class CreatePostComponent implements OnInit {
     }
 
     if (this.mode === 'create') {
-      const post = {
-        id: null,
-        title: this.form.value.title,
-        content: this.form.value.content,
-        imagePath: this.form.value.image,
-      };
-
-      this.postService.addPost(post).subscribe(data => {
+      this.postService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      ).subscribe(data => {
         this.router.navigate(['/']);
       });
     } else {

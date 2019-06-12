@@ -25,7 +25,8 @@ export class PostService {
               title: post.title,
               content: post.content,
               id: post._id,
-              imagePath: post.imagePath
+              imagePath: post.imagePath,
+              creator: post.creator
             };
           }),
           maxPosts: postData.maxPosts
@@ -34,14 +35,14 @@ export class PostService {
   }
 
   getPost(id: string) {
-    return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>(this.url + '/' + id);
+    return this.http.get<{ _id: string, title: string, content: string, imagePath: string, creator: string }>(this.url + '/' + id);
   }
 
-  addPost(post: Post) {
+  addPost(title: string, content: string, image: File) {
     const postDate = new FormData(); // we add this cuz we can't upload an image to the backend with json format
-    postDate.append('title', post.title);
-    postDate.append('content', post.content);
-    postDate.append('image', post.imagePath, post.title /* file name */);
+    postDate.append('title', title);
+    postDate.append('content', content);
+    postDate.append('image', image, title /* file name */);
     return this.http
       .post<{ message: string, post: Post }>(this.url, postDate);
   }
@@ -55,14 +56,12 @@ export class PostService {
       postDate.append('content', content);
       postDate.append('image', image, title /* file name */);
     } else {
-      postDate = { id: id, title: title, content: content, imagePath: null }
+      postDate = { id: id, title: title, content: content, imagePath: image, creator: null }
     }
     return this.http.put(this.url + '/' + id, postDate);
   }
 
   deletePost(id: string) {
-    console.log(id);
-
     return this.http.delete(this.url + '/' + id);
   }
 
