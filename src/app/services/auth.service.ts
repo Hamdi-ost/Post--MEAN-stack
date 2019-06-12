@@ -43,21 +43,66 @@ export class AuthService {
         this.token = token;
         if (this.token) {
           const expiresInDuration = res.expiresIn;
-          this.tokenTimer = setTimeout(() => {
-            this.logout();
-          }, expiresInDuration * 1000); // *1000 cuz it works with milliseconds
+          this.setAuthTimer(expiresInDuration);
           this.isAuthenticated = true;
           this.authStatusListener.next(true);
+          const now = new Date();
+          const expirationDate = new Date(now.getTime() + expiresInDuration * 1000)
+          this.saveAuthData(token, expirationDate);
           this.router.navigate(['/']);
         }
       });
+  }
+
+  // let the user in if there is a token inside the localstorage
+  autoAuthUser() {
+    const authInfo = this.getAuthData();
+    if (!authInfo) { return; }
+    const now = new Date();
+    const expiresIn = authInfo.expirationDate.getTime() - now.getTime(); // check if the token not expired
+    if (expiresIn > 0) {
+      this.token = authInfo.token;
+      this.isAuthenticated = true;
+      this.setAuthTimer(expiresIn / 1000);
+      this.authStatusListener.next(true);
+    }
+  }
+
+  private setAuthTimer(duration: number) {
+    this.tokenTimer = setTimeout(() => {
+      this.logout();
+    }, duration * 1000); // *1000 cuz it works with milliseconds
   }
 
   logout() {
     this.token = null;
     this.isAuthenticated = false;
     this.authStatusListener.next(false);
-    this.router.navigate(['/']);
     clearTimeout(this.tokenTimer);
+    this.clearAuthData();
+    this.router.navigate(['/']);
+  }
+
+  private saveAuthData(token: string, expirationDate: Date) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('expiration', expirationDate.toISOString());
+  }
+
+  private clearAuthData() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('expiration');
+  }
+
+  private getAuthData() {
+    const token = localStorage.getItem('token');
+    const expirationDate = localStorage.getItem('expiration');
+    if (!token || !expirationDate) {
+      return;
+    }
+    return {
+      // tslint:disable-next-line: object-literal-shorthand
+      token: token,
+      expirationDate: new Date(expirationDate)
+    }
   }
 }
